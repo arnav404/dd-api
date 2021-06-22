@@ -68,7 +68,7 @@ def getGamelog(pl, st):
         except (AttributeError, TypeError, NameError):
             pass
 
-    return json.dumps({"data": str(pts)[1:-1]})
+    return json.dumps({"data": pts})
 
 
 if __name__ == "__main__":
