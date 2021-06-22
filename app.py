@@ -22,12 +22,12 @@ totals = soup2.findAll("table", {"id": "per_game_stats"})[0].tbody.findAll(
 )
 
 
-@app.route("/yo")
+@app.route("/")
 def getAverage():
     return "Hello World"
 
 
-@app.route("/<pl>/<st>", methods=["POST", "GET"])
+@app.route("/getlogs/<pl>/<st>", methods=["POST", "GET"])
 def getGamelog(pl, st):
     player = pl
     stat = st
