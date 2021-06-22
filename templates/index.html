@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1>{{value}}</h1>
+        <form action="/getlogs" method="POST">
+            <input type="text" class="form-control" placeholder="Enter Player Name" name="player" id="player">
+            <input type="text" class="form-control" placeholder="Enter Stat" name="stat" id="stat">
+            <input class="btn-success" type="submit" value="search">
+        </form>
+        <div id="d3-container"></div>
+    </div>
+</body>
+</html>
