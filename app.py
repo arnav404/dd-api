@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request
+from flask_cors import CORS, cross_origin
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 import os
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config["CORS_HEADERS"] = "Content-Type"
 
 player = "James Harden"
 year = "2021"
@@ -23,11 +26,13 @@ totals = soup2.findAll("table", {"id": "per_game_stats"})[0].tbody.findAll(
 
 
 @app.route("/")
+@cross_origin()
 def getAverage():
     return "Hello World"
 
 
 @app.route("/getlogs/<pl>/<st>", methods=["POST", "GET"])
+@cross_origin()
 def getGamelog(pl, st):
     player = pl
     stat = st
