@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
+import os
 
 app = Flask(__name__)
 
@@ -83,4 +84,5 @@ def getAverage():
 
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(port=port)
