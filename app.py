@@ -61,34 +61,25 @@ def getGamelog(pl, st):
 
 @app.route("/", methods=["GET", "POST"])
 def getAverage():
-    if request.method == "POST":
-        ppg = 0.0
-        player = request.form["player"]
-        stat = request.form["stat"].lower()
-        # player string url
-        player_input = (
-            player.split(" ")[1][0:5].lower() + player.split(" ")[0][0:2].lower() + "01"
-        )
+    ppg = 0.0
+    player = request.form["player"]
+    stat = request.form["stat"].lower()
+    # player string url
+    player_input = (
+        player.split(" ")[1][0:5].lower() + player.split(" ")[0][0:2].lower() + "01"
+    )
 
-        for i in range(len(totals)):
-            try:
-                if (
-                    totals[i]
-                    .find("td", {"data-stat": "player"})["data-append-csv"]
-                    .lower()
-                    == player_input
-                ):
-                    ppg = totals[i].find("td", {"data-stat": stat + "_per_g"}).text
-            except (AttributeError, TypeError, NameError):
-                pass
+    for i in range(len(totals)):
+        try:
+            if (
+                totals[i].find("td", {"data-stat": "player"})["data-append-csv"].lower()
+                == player_input
+            ):
+                ppg = totals[i].find("td", {"data-stat": stat + "_per_g"}).text
+        except (AttributeError, TypeError, NameError):
+            pass
 
-        return render_template(
-            "index.html",
-            value=str(player) + " averaged " + str(ppg) + " " + str(stat) + " per game",
-        )
-
-    else:
-        return render_template("index.html", value="Welcome")
+    return str(player) + " averaged " + str(ppg) + " " + str(stat) + " per game"
 
 
 if __name__ == "__main__":
