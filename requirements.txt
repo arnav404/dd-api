@@ -5,5 +5,5 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 MarkupSafe==1.1.1
 Werkzeug==0.15.6
-beautifulsoup4==4.1.3
+beautifulsoup4==4.9.3
 Anaconda==0.0.1.1
