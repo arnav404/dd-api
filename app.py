@@ -13,7 +13,7 @@ player = "James Harden"
 year = "2021"
 stat = "pts"
 
-avgs = [0, 0, 0, 0, 0]
+avgs = [0, 0, 0, 0, 0, 0]
 
 
 @app.route("/")
