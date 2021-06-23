@@ -64,6 +64,8 @@ def getAverages(pl):
             avgs[3] = data[i].find("p").text
         if data[i].find("h4")["data-tip"] == "3-Point Field Goal Percentage":
             avgs[4] = data[i].find("p").text
+        if data[i].find("h4")["data-tip"] == "Free Throw Percentage":
+            avgs[5] = data[i].find("p").text
 
     return json.dumps({"data": avgs})
 
