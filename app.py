@@ -13,7 +13,7 @@ player = "James Harden"
 year = "2021"
 stat = "pts"
 
-avgs = [0, 0, 0]
+avgs = [0, 0, 0, 0, 0]
 
 
 @app.route("/")
@@ -49,8 +49,6 @@ def getAverages(pl):
 
     data = page_soup.find("div", {"class": "p1"}).findAll("div")
 
-    print(data)
-
     for i in range(len(data)):
         if data[i].find("h4")["data-tip"] == "Points":
             avgs[0] = data[i].find("p").text
@@ -58,6 +56,14 @@ def getAverages(pl):
             avgs[1] = data[i].find("p").text
         if data[i].find("h4")["data-tip"] == "Assists":
             avgs[2] = data[i].find("p").text
+
+    data = page_soup.find("div", {"class": "p2"}).findAll("div")
+
+    for i in range(len(data)):
+        if data[i].find("h4")["data-tip"] == "Field Goal Percentage":
+            avgs[3] = data[i].find("p").text
+        if data[i].find("h4")["data-tip"] == "3-Point Field Goal Percentage":
+            avgs[4] = data[i].find("p").text
 
     return json.dumps({"data": avgs})
 
