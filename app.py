@@ -70,14 +70,14 @@ def getAverages(pl):
     # rows of the table
     data = page_soup.findAll("table", {"id": "pgl_basic"})[0].tbody.findAll("tr")
 
-    stats = ["pts", "reb", "ast", "stl", "blk", "tov"]
+    stats = ["pts", "trb", "ast", "stl", "blk", "tov"]
     log = []
 
     for j in range(len(stats)):
         statArr = []
         for i in range(len(data)):
             try:
-                statArr.append(int(data[i].find("td", {"data-stat": stat}).text))
+                statArr.append(int(data[i].find("td", {"data-stat": stats[j]}).text))
             except (AttributeError, TypeError, NameError):
                 pass
         log.append(statArr)
