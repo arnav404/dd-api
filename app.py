@@ -22,7 +22,7 @@ def helloWorld():
     return json.dumps({"data": "Hello World"})
 
 
-@app.route("/getavgs/<pl>", methods=["POST", "GET"])
+@app.route("/getstats/<pl>", methods=["POST", "GET"])
 @cross_origin()
 def getAverages(pl):
     player = pl
@@ -67,7 +67,22 @@ def getAverages(pl):
         if data[i].find("h4")["data-tip"] == "Free Throw Percentage":
             avgs[5] = data[i].find("p").text
 
-    return json.dumps({"data": avgs})
+    # rows of the table
+    data = page_soup.findAll("table", {"id": "pgl_basic"})[0].tbody.findAll("tr")
+
+    stats = ["pts", "reb", "ast", "stl", "blk", "tov"]
+    log = []
+
+    for j in range(len(stats)):
+        statArr = []
+        for i in range(len(data)):
+            try:
+                statArr.append(int(data[i].find("td", {"data-stat": stat}).text))
+            except (AttributeError, TypeError, NameError):
+                pass
+        log.append(statArr)
+
+    return json.dumps({"avgs": avgs, "gamelog": log})
 
 
 @app.route("/getlogs/<pl>/<st>", methods=["POST", "GET"])
