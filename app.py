@@ -82,7 +82,10 @@ def getAverages(pl):
                 pass
         log.append(statArr)
 
-    return json.dumps({"avgs": avgs, "gamelog": log})
+    # rows of the table
+    data = page_soup.find("img", {"itemscope": "image"})
+
+    return json.dumps({"avgs": avgs, "gamelog": log, "image": data["src"]})
 
 
 @app.route("/getlogs/<pl>/<st>", methods=["POST", "GET"])
