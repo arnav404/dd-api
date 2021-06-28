@@ -110,15 +110,23 @@ def getAverages(player):
     for j in range(6):
         percentile_stat = []
         for i in range(len(data)):
-            percentile_stat.append(
-                float("0" + data[i].find("td", {"data-stat": stats[j]}).text)
-            )
+            if int(data[i].find("td", {"data-stat": "g"}).text) > 19:
+                percentile_stat.append(
+                    float("0" + data[i].find("td", {"data-stat": stats[j]}).text)
+                )
         percentile_stat.sort()
-        average = float(avgs[j])
+        average = 0.0
+        if avgs[j] != "-":
+            average = float(avgs[j])
         if j > 2:
             formatted_avg = 3
-            average = round(float(avgs[j]) / 100, formatted_avg)
-        percentiles.append(percentile_stat.index(average) / len(percentile_stat))
+            if avgs[j] != "-":
+                average = round(float(avgs[j]) / 100, formatted_avg)
+        try:
+            percentiles.append(percentile_stat.index(average) / len(percentile_stat))
+        except (ValueError):
+            percentiles = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            break
 
     return json.dumps({"avgs": avgs, "gamelog": log, "percentiles": percentiles})
 
