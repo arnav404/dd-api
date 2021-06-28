@@ -61,36 +61,15 @@ def getAverages(player):
     # getting the data
     uClient = uReq(my_url)
     page_html = uClient.read()
-    uClient = uReq(season_stats_url)
-    statsheet_html = uClient.read()
     uClient.close()
     page_soup = soup(page_html, "html.parser")
 
-    data = page_soup.find("div", {"class": "p1"}).findAll("div")
-
-    for i in range(len(data)):
-        if data[i].find("h4")["data-tip"] == "Points":
-            avgs[0] = data[i].find("p").text
-        if data[i].find("h4")["data-tip"] == "Total Rebounds":
-            avgs[1] = data[i].find("p").text
-        if data[i].find("h4")["data-tip"] == "Assists":
-            avgs[2] = data[i].find("p").text
-
-    data = page_soup.find("div", {"class": "p2"}).findAll("div")
-
-    for i in range(len(data)):
-        if data[i].find("h4")["data-tip"] == "Field Goal Percentage":
-            avgs[3] = data[i].find("p").text
-        if data[i].find("h4")["data-tip"] == "3-Point Field Goal Percentage":
-            avgs[4] = data[i].find("p").text
-        if data[i].find("h4")["data-tip"] == "Free Throw Percentage":
-            avgs[5] = data[i].find("p").text
-
-    # rows of the table
+    # GAMELOG
     data = page_soup.findAll("table", {"id": "pgl_basic"})[0].tbody.findAll("tr")
 
     stats = ["pts", "trb", "ast", "stl", "blk", "tov"]
     log = []
+    avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     for j in range(len(stats)):
         statArr = []
@@ -101,15 +80,31 @@ def getAverages(player):
                 pass
         log.append(statArr)
 
+    # PERCENTILES
     data = statsheet_soup.findAll("table", {"class": "stats_table"})[0].tbody.findAll(
         "tr", {"class": "full_table"}
     )
 
     percentiles = []
-    stats = ["pts_per_g", "trb_per_g", "ast_per_g", "fg_pct", "fg3_pct", "ft_pct"]
-    for j in range(6):
+    stats = [
+        "pts_per_g",
+        "trb_per_g",
+        "ast_per_g",
+        "fga_per_g",
+        "fg3a_per_g",
+        "fta_per_g",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
+    ]
+    for j in range(len(stats)):
         percentile_stat = []
         for i in range(len(data)):
+            if (
+                data[i].find("td", {"data-stat": "player"})["data-append-csv"]
+                == player_input
+            ):
+                avgs[j] = data[i].find("td", {"data-stat": stats[j]}).text
             if int(data[i].find("td", {"data-stat": "g"}).text) > 19:
                 percentile_stat.append(
                     float("0" + data[i].find("td", {"data-stat": stats[j]}).text)
@@ -118,13 +113,11 @@ def getAverages(player):
         average = 0.0
         if avgs[j] != "-":
             average = float(avgs[j])
-        if j > 2:
-            formatted_avg = 3
-            if avgs[j] != "-":
-                average = round(float(avgs[j]) / 100, formatted_avg)
+        print(average)
         try:
             percentiles.append(percentile_stat.index(average) / len(percentile_stat))
         except (ValueError):
+            avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
             percentiles = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
             break
 
