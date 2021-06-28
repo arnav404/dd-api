@@ -15,6 +15,16 @@ stat = "pts"
 
 avgs = [0, 0, 0, 0, 0, 0]
 
+season_stats_url = (
+    "https://www.basketball-reference.com/leagues/NBA_" + year + "_per_game.html"
+)
+
+uClient = uReq(season_stats_url)
+statsheet_html = uClient.read()
+uClient.close()
+
+statsheet_soup = soup(statsheet_html, "html.parser")
+
 
 @app.route("/")
 @cross_origin()
@@ -22,17 +32,24 @@ def helloWorld():
     return json.dumps({"data": "Hello World"})
 
 
-@app.route("/getstats/<pl>", methods=["POST", "GET"])
+# This endpoint returns
+# 1) The gamelog -- the number of points, rebounds, assists, steals,
+# blocks, and turnovers scored
+# 2) The averages -- the season averages in those categories
+# 3) The percentiles -- the percentage of players who scored less
+# than the player in each category
+@app.route("/getstats/<player>", methods=["POST", "GET"])
 @cross_origin()
-def getAverages(pl):
-    player = pl
+def getAverages(player):
+
+    # GETTING THE DATA:
 
     # player string url
     player_input = (
         player.split(" ")[1][0:5].lower() + player.split(" ")[0][0:2].lower() + "01"
     )
 
-    # url of bball reference page
+    # url of bball-reference page
     my_url = (
         "https://www.basketball-reference.com/players/c/"
         + player_input
@@ -44,6 +61,8 @@ def getAverages(pl):
     # getting the data
     uClient = uReq(my_url)
     page_html = uClient.read()
+    uClient = uReq(season_stats_url)
+    statsheet_html = uClient.read()
     uClient.close()
     page_soup = soup(page_html, "html.parser")
 
@@ -82,49 +101,26 @@ def getAverages(pl):
                 pass
         log.append(statArr)
 
-    # rows of the table
-    data = page_soup.find("img", {"itemscope": "image"})
-
-    return json.dumps({"avgs": avgs, "gamelog": log, "image": data["src"]})
-
-
-@app.route("/getlogs/<pl>/<st>", methods=["POST", "GET"])
-@cross_origin()
-def getGamelog(pl, st):
-    player = pl
-    stat = st
-    # player string url
-    player_input = (
-        player.split(" ")[1][0:5].lower() + player.split(" ")[0][0:2].lower() + "01"
+    data = statsheet_soup.findAll("table", {"class": "stats_table"})[0].tbody.findAll(
+        "tr", {"class": "full_table"}
     )
 
-    # url of bball reference page
-    my_url = (
-        "https://www.basketball-reference.com/players/c/"
-        + player_input
-        + "/gamelog/"
-        + year
-        + "#pgl_basic"
-    )
+    percentiles = []
+    stats = ["pts_per_g", "trb_per_g", "ast_per_g", "fg_pct", "fg3_pct", "ft_pct"]
+    for j in range(6):
+        percentile_stat = []
+        for i in range(len(data)):
+            percentile_stat.append(
+                float("0" + data[i].find("td", {"data-stat": stats[j]}).text)
+            )
+        percentile_stat.sort()
+        average = float(avgs[j])
+        if j > 2:
+            formatted_avg = 3
+            average = round(float(avgs[j]) / 100, formatted_avg)
+        percentiles.append(percentile_stat.index(average) / len(percentile_stat))
 
-    # getting the data
-    uClient = uReq(my_url)
-    page_html = uClient.read()
-    uClient.close()
-    page_soup = soup(page_html, "html.parser")
-
-    # rows of the table
-    data = page_soup.findAll("table", {"id": "pgl_basic"})[0].tbody.findAll("tr")
-
-    pts = []
-
-    for i in range(len(data)):
-        try:
-            pts.append(int(data[i].find("td", {"data-stat": stat}).text))
-        except (AttributeError, TypeError, NameError):
-            pass
-
-    return json.dumps({"data": pts})
+    return json.dumps({"avgs": avgs, "gamelog": log, "percentiles": percentiles})
 
 
 if __name__ == "__main__":
