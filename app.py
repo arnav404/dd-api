@@ -69,7 +69,7 @@ def getAverages(player):
 
     stats = ["pts", "trb", "ast", "stl", "blk", "tov"]
     log = []
-    avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     for j in range(len(stats)):
         statArr = []
@@ -90,10 +90,14 @@ def getAverages(player):
         "pts_per_g",
         "trb_per_g",
         "ast_per_g",
+        "stl_per_g",
+        "blk_per_g",
         "fga_per_g",
+        "fg2a_per_g",
         "fg3a_per_g",
         "fta_per_g",
         "fg_pct",
+        "fg2_pct",
         "fg3_pct",
         "ft_pct",
     ]
@@ -117,8 +121,22 @@ def getAverages(player):
         try:
             percentiles.append(percentile_stat.index(average) / len(percentile_stat))
         except (ValueError):
-            avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            percentiles = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            avgs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            percentiles = [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
             break
 
     return json.dumps({"avgs": avgs, "gamelog": log, "percentiles": percentiles})
