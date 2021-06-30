@@ -15,16 +15,6 @@ stat = "pts"
 
 avgs = [0, 0, 0, 0, 0, 0]
 
-season_stats_url = (
-    "https://www.basketball-reference.com/leagues/NBA_" + year + "_per_game.html"
-)
-
-uClient = uReq(season_stats_url)
-statsheet_html = uClient.read()
-uClient.close()
-
-statsheet_soup = soup(statsheet_html, "html.parser")
-
 
 @app.route("/")
 @cross_origin()
@@ -38,9 +28,11 @@ def helloWorld():
 # 2) The averages -- the season averages in those categories
 # 3) The percentiles -- the percentage of players who scored less
 # than the player in each category
-@app.route("/getstats/<player>", methods=["POST", "GET"])
+@app.route("/getstats/<player>/<yr>", methods=["POST", "GET"])
 @cross_origin()
-def getAverages(player):
+def getAverages(player, yr):
+
+    year = yr
 
     # GETTING THE DATA:
 
@@ -63,6 +55,16 @@ def getAverages(player):
     page_html = uClient.read()
     uClient.close()
     page_soup = soup(page_html, "html.parser")
+
+    season_stats_url = (
+        "https://www.basketball-reference.com/leagues/NBA_" + year + "_per_game.html"
+    )
+
+    uClient = uReq(season_stats_url)
+    statsheet_html = uClient.read()
+    uClient.close()
+
+    statsheet_soup = soup(statsheet_html, "html.parser")
 
     # GAMELOG
     data = page_soup.findAll("table", {"id": "pgl_basic"})[0].tbody.findAll("tr")
